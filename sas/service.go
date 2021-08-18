@@ -5,14 +5,14 @@ import (
 	"strings"
 
 	// Internal Imports
-	"github.com/matthewhartstonge/sassy/api"
+	"github.com/matthewhartstonge/sassy/sas/api"
 )
 
 type signedPermissionSpec struct {
 	OpName        string
 	OpDescription string
 	Index         int
-	APIVersion    api.Version
+	APIVersion    api.SignedVersion
 }
 
 func signedPermissionMap() map[string]signedPermissionSpec {
@@ -138,7 +138,7 @@ func (p SignedPermissions) GetKey() string {
 }
 
 // GetValue returns the permissions string in the required order.
-func (p SignedPermissions) GetValue(version api.Version) string {
+func (p SignedPermissions) GetValue(version api.SignedVersion) string {
 	spMap := signedPermissionMap()
 	out := [len(p.permissions)]string{}
 	for _, value := range p.permissions {
