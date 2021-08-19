@@ -34,20 +34,17 @@ type SignedPermissions struct {
 }
 
 func (p SignedPermissions) ToString() string {
+	var out []string
 	spMap := signedPermissionMap()
-	out := [len(p.permissions)]string{}
 	for _, value := range p.permissions {
 		if spec, ok := spMap[value]; ok {
 			if spec.APIVersion == versions.VAll || spec.APIVersion <= p.SignedVersion {
-				out[spec.Index] = value
+				out = append(out, value)
 			}
 		}
 	}
 
-	return strings.Replace(
-		strings.Join(out[:], ""),
-		" ", "", -1,
-	)
+	return strings.Join(out, "")
 }
 
 func (p SignedPermissions) SetParam(params *url.Values) {
