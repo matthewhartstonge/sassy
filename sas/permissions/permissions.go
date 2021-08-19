@@ -9,13 +9,6 @@ import (
 	"github.com/matthewhartstonge/sassy/sas/versions"
 )
 
-type signedPermissionSpec struct {
-	OpName        string
-	OpDescription string
-	Index         int
-	APIVersion    versions.SignedVersion
-}
-
 const (
 	numPermissions = 13
 	paramKey       = "sp"
@@ -26,9 +19,10 @@ type SignedPermissions struct {
 	// API version in use.
 	versions.SignedVersion
 
-	// isEmpty tracks whether permissions have been added.
-	isEmpty bool
-	// permissions must be in the following order to comply to azure specifications: "racwdx(y?)ltmeop"
+	// hasValues tracks whether permissions have been added.
+	hasValues bool
+	// permissions must be in the following order to comply to azure
+	// specifications: "racwdxyltmeop"
 	// Refer: https://docs.microsoft.com/en-us/rest/api/storageservices/create-service-sas#specifying-permissions
 	permissions [numPermissions]string
 }
@@ -48,13 +42,13 @@ func (p SignedPermissions) ToString() string {
 }
 
 func (p SignedPermissions) SetParam(params *url.Values) {
-	if !p.isEmpty {
+	if p.hasValues {
 		params.Add(paramKey, p.ToString())
 	}
 }
 
 func (p SignedPermissions) GetParam() (signedPermissions string) {
-	if !p.isEmpty {
+	if p.hasValues {
 		values := &url.Values{}
 		p.SetParam(values)
 
@@ -65,7 +59,7 @@ func (p SignedPermissions) GetParam() (signedPermissions string) {
 }
 
 func (p SignedPermissions) GetURLDecodedParam() (signedPermissions string) {
-	if !p.isEmpty {
+	if p.hasValues {
 		signedPermissions, _ = url.QueryUnescape(p.GetParam())
 	}
 
@@ -74,24 +68,32 @@ func (p SignedPermissions) GetURLDecodedParam() (signedPermissions string) {
 
 func Parse(version versions.SignedVersion, permissions string) (sp SignedPermissions) {
 	sp = SignedPermissions{
-		permissions:   [numPermissions]string{},
-		isEmpty:       true,
+		hasValues:   false,
+		permissions: [numPermissions]string{},
+
 		SignedVersion: version,
 	}
 
 	spMap := signedPermissionMap()
-	inputPermissions := strings.Split(permissions, "")
-	for _, permission := range inputPermissions {
+	splitPermissions := strings.Split(permissions, "")
+	for _, permission := range splitPermissions {
 		conformedPermission := strings.ToLower(permission)
 		if spec, ok := spMap[conformedPermission]; ok {
 			sp.permissions[spec.Index] = conformedPermission
-			if sp.isEmpty {
-				sp.isEmpty = false
+			if !sp.hasValues {
+				sp.hasValues = true
 			}
 		}
 	}
 
 	return sp
+}
+
+type signedPermissionSpec struct {
+	OpName        string
+	OpDescription string
+	Index         int
+	APIVersion    versions.SignedVersion
 }
 
 func signedPermissionMap() map[string]signedPermissionSpec {
