@@ -19,14 +19,18 @@ const paramKey = "ss"
 
 type Services []Service
 
+func (s Services) ToString() string {
+	ss := ""
+	for _, service := range s {
+		ss += string(service)
+	}
+
+	return ss
+}
+
 func (s *Services) SetParam(params *url.Values) {
 	if s != nil && len(*s) > 0 {
-		ss := ""
-		for _, service := range *s {
-			ss += string(service)
-		}
-
-		params.Add(paramKey, ss)
+		params.Add(paramKey, s.ToString())
 	}
 }
 
