@@ -5,14 +5,14 @@ import (
 	"strings"
 
 	// Internal Imports
-	"github.com/matthewhartstonge/sassy/sas/api"
+	"github.com/matthewhartstonge/sassy/sas/signed_versions"
 )
 
 type signedPermissionSpec struct {
 	OpName        string
 	OpDescription string
 	Index         int
-	APIVersion    api.SignedVersion
+	APIVersion    signed_versions.SignedVersion
 }
 
 func signedPermissionMap() map[string]signedPermissionSpec {
@@ -22,79 +22,79 @@ func signedPermissionMap() map[string]signedPermissionSpec {
 			OpName:        "Read",
 			OpDescription: "Read the content, block list, properties, and metadata of any blob in the container or directory. Use a blob as the source of a copy operation.",
 			Index:         0,
-			APIVersion:    api.VAll,
+			APIVersion:    signed_versions.VAll,
 		},
 		"a": {
 			OpName:        "Add",
 			OpDescription: "Add a block to an append blob.",
 			Index:         1,
-			APIVersion:    api.VAll,
+			APIVersion:    signed_versions.VAll,
 		},
 		"c": {
 			OpName:        "Create",
 			OpDescription: "Write a new blob, snapshot a blob, or copy a blob to a new blob.",
 			Index:         2,
-			APIVersion:    api.VAll,
+			APIVersion:    signed_versions.VAll,
 		},
 		"w": {
 			OpName:        "Write",
 			OpDescription: "Create or write content, properties, metadata, or block list. Snapshot or lease the blob. Resize the blob (page blob only). Use the blob as the destination of a copy operation.",
 			Index:         3,
-			APIVersion:    api.VAll,
+			APIVersion:    signed_versions.VAll,
 		},
 		"d": {
 			OpName:        "Delete",
 			OpDescription: "Delete a blob. For version 2017-07-29 and later, the Delete permission also allows breaking a lease on a blob. For more information, see the Lease Blob operation.",
 			Index:         4,
-			APIVersion:    api.VAll,
+			APIVersion:    signed_versions.VAll,
 		},
 		"x": {
 			OpName:        "Delete version",
 			OpDescription: "Delete a blob version.",
 			Index:         5,
-			APIVersion:    api.V2019_12_12,
+			APIVersion:    signed_versions.V2019_12_12,
 		},
 		"y": {
 			OpName:        "Permanent delete",
 			OpDescription: "Permanently delete a blob snapshot or version.",
 			Index:         6,
-			APIVersion:    api.V2020_02_10,
+			APIVersion:    signed_versions.V2020_02_10,
 		},
 		"l": {
 			OpName:        "List",
 			OpDescription: "List blobs non-recursively.",
 			Index:         7,
-			APIVersion:    api.VAll,
+			APIVersion:    signed_versions.VAll,
 		},
 		"t": {
 			OpName:        "Tags",
 			OpDescription: "Read or write the tags on a blob.",
 			Index:         8,
-			APIVersion:    api.V2019_12_12,
+			APIVersion:    signed_versions.V2019_12_12,
 		},
 		"m": {
 			OpName:        "Move",
 			OpDescription: "Move a blob or a directory and its contents to a new location. This operation can optionally be restricted to the owner of the child blob, directory, or parent directory if the `saoid` parameter is included on the SAS token and the sticky bit is set on the parent directory.",
 			Index:         9,
-			APIVersion:    api.V2020_02_10,
+			APIVersion:    signed_versions.V2020_02_10,
 		},
 		"e": {
 			OpName:        "Execute",
 			OpDescription: "Get the system properties and, if the hierarchical namespace is enabled for the storage account, get the POSIX ACL of a blob. If the hierarchical namespace is enabled and the caller is the owner of a blob, this permission grants the ability to set the owning group, POSIX permissions, and POSIX ACL of the blob. Does not permit the caller to read user-defined metadata.",
 			Index:         10,
-			APIVersion:    api.V2020_02_10,
+			APIVersion:    signed_versions.V2020_02_10,
 		},
 		"o": {
 			OpName:        "Ownership",
 			OpDescription: "When the hierarchical namespace is enabled, this permission enables the caller to set the owner or the owning group, or to act as the owner when renaming or deleting a directory or blob within a directory that has the sticky bit set.",
 			Index:         11,
-			APIVersion:    api.V2020_02_10,
+			APIVersion:    signed_versions.V2020_02_10,
 		},
 		"p": {
 			OpName:        "Permissions",
 			OpDescription: "When the hierarchical namespace is enabled, this permission allows the caller to set permissions and POSIX ACLs on directories and blobs.",
 			Index:         12,
-			APIVersion:    api.V2020_02_10,
+			APIVersion:    signed_versions.V2020_02_10,
 		},
 	}
 }
@@ -138,12 +138,12 @@ func (p SignedPermissions) GetKey() string {
 }
 
 // GetValue returns the permissions string in the required order.
-func (p SignedPermissions) GetValue(version api.SignedVersion) string {
+func (p SignedPermissions) GetValue(version signed_versions.SignedVersion) string {
 	spMap := signedPermissionMap()
 	out := [len(p.permissions)]string{}
 	for _, value := range p.permissions {
 		if spec, ok := spMap[value]; ok {
-			if spec.APIVersion == api.VAll || spec.APIVersion <= version {
+			if spec.APIVersion == signed_versions.VAll || spec.APIVersion <= version {
 				out[spec.Index] = value
 			}
 		}
