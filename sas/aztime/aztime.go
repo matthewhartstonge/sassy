@@ -33,7 +33,8 @@ func ParseISO8601DateTime(dateTime string) (t time.Time, err error) {
 	}
 
 	for _, format := range inputFormats {
-		if t, err = time.Parse(format, dateTime); err == nil {
+		// Parse the incoming time in local timezone
+		if t, err = time.ParseInLocation(format, dateTime, time.Local); err == nil {
 			return t, nil
 		}
 	}
