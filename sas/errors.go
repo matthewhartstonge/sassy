@@ -6,7 +6,8 @@ import (
 )
 
 var (
-	ErrInvalidVersion          = errors.New("error parsing signed version")
-	ErrInvalidStartDateFormat  = errors.New("invalid date format provided for signed start, must be ISO 8601 formatted date string")
-	ErrInvalidExpiryDateFormat = errors.New("invalid date format provided for signed expiry, must be ISO 8601 formatted date string")
+	ErrInvalidVersion           = errors.New("error parsing signed version")
+	ErrInvalidStartDateFormat   = errors.New("invalid date format provided for signed start, must be ISO 8601 formatted date string")
+	ErrInvalidExpiryDateFormat  = errors.New("invalid date format provided for signed expiry, must be ISO 8601 formatted date string")
+	ErrInvalidStorageAccountKey = errors.New("error decoding storage account key, must be base64 encoded")
 )

@@ -2,6 +2,7 @@ package sas
 
 import (
 	// Standard Library Imports
+	"encoding/base64"
 	"net/url"
 	"time"
 
@@ -34,6 +35,11 @@ func NewAccountSAS(
 	options *AccountSASOptions,
 	err error,
 ) {
+	storageKeyBytes, err := base64.StdEncoding.DecodeString(storageAccountKey)
+	if err != nil {
+		return nil, ErrInvalidStorageAccountKey
+	}
+
 	sv, ok := versions.Parse(signedVersion)
 	if !ok {
 		return nil, ErrInvalidVersion
@@ -58,7 +64,7 @@ func NewAccountSAS(
 
 	options = &AccountSASOptions{
 		storageAccountName:  storageAccountName,
-		storageAccountKey:   storageAccountKey,
+		storageAccountKey:   storageKeyBytes,
 		SignedVersion:       sv,
 		SignedServices:      ss,
 		SignedResourceTypes: srt,
@@ -126,7 +132,7 @@ func WithSignedProtocols(signedProtocols string) AccountSASOption {
 
 type AccountSASOptions struct {
 	storageAccountName  string
-	storageAccountKey   string
+	storageAccountKey   []byte
 	ApiVersion          string
 	SignedVersion       versions.SignedVersion
 	SignedServices      services.Services
@@ -199,7 +205,7 @@ func (o AccountSASOptions) signPayload(params *url.Values) {
 
 	// Compute HMAC-S256 signature
 	signature := hmacSHA256(
-		[]byte(o.storageAccountKey),
+		o.storageAccountKey,
 		[]byte(unescapedStringToSign),
 	)
 
