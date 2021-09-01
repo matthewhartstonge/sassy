@@ -43,7 +43,8 @@ func ParseISO8601DateTime(dateTime string) (t time.Time, err error) {
 }
 
 func ToString(t time.Time) string {
-	return t.Format(time.RFC3339)
+	// Timestamps sent through MUST be in UTC.
+	return t.UTC().Format(time.RFC3339)
 }
 
 func GetParam(paramKey string, t time.Time) (timeParam string) {
