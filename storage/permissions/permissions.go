@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	// Internal Imports
-	"github.com/matthewhartstonge/sassy/sas/versions"
+	"github.com/matthewhartstonge/sassy/storage/versions"
 )
 
 const (

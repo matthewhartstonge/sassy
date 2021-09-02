@@ -1,4 +1,4 @@
-package sas
+package storage
 
 import (
 	// Standard Library Imports
@@ -7,14 +7,14 @@ import (
 	"time"
 
 	// Internal Imports
-	"github.com/matthewhartstonge/sassy/sas/aztime"
-	"github.com/matthewhartstonge/sassy/sas/crypto"
-	"github.com/matthewhartstonge/sassy/sas/permissions"
-	"github.com/matthewhartstonge/sassy/sas/protocols"
-	"github.com/matthewhartstonge/sassy/sas/resourcetypes"
-	"github.com/matthewhartstonge/sassy/sas/services"
-	"github.com/matthewhartstonge/sassy/sas/signedip"
-	"github.com/matthewhartstonge/sassy/sas/versions"
+	"github.com/matthewhartstonge/sassy/storage/aztime"
+	"github.com/matthewhartstonge/sassy/storage/crypto"
+	"github.com/matthewhartstonge/sassy/storage/permissions"
+	"github.com/matthewhartstonge/sassy/storage/protocols"
+	"github.com/matthewhartstonge/sassy/storage/resourcetypes"
+	"github.com/matthewhartstonge/sassy/storage/services"
+	"github.com/matthewhartstonge/sassy/storage/signedip"
+	"github.com/matthewhartstonge/sassy/storage/versions"
 )
 
 // NewAccountSAS provides a way to generate an account based Shared Access
