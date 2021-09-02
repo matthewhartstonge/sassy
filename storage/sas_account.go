@@ -140,7 +140,9 @@ type AccountSAS struct {
 	SignedProtocol      protocols.Protocols
 }
 
-func (o AccountSAS) GetToken() string {
+// Token generates and signs an account based storage SAS token based on the
+// stored configuration.
+func (o AccountSAS) Token() string {
 	params := &url.Values{}
 	if o.ApiVersion != "" {
 		params.Add("api-version", o.ApiVersion)
