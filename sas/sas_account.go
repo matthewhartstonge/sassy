@@ -8,6 +8,7 @@ import (
 
 	// Internal Imports
 	"github.com/matthewhartstonge/sassy/sas/aztime"
+	"github.com/matthewhartstonge/sassy/sas/crypto"
 	"github.com/matthewhartstonge/sassy/sas/permissions"
 	"github.com/matthewhartstonge/sassy/sas/protocols"
 	"github.com/matthewhartstonge/sassy/sas/resourcetypes"
@@ -189,7 +190,8 @@ func (o AccountSASOptions) signPayload(params *url.Values) {
 	//
 	// Note:
 	// - Fields included in the string-to-sign must be UTF-8, URL-decoded.
-	// - Go by default uses utf-8 encoded strings.
+	//   - Go by default uses utf-8 encoded strings.
+	//   - The `ToString()` methods ensure no URL encoding is taking place.
 	stringToSign := o.storageAccountName + "\n" +
 		o.SignedPermission.ToString() + "\n" +
 		o.SignedServices.ToString() + "\n" +
@@ -200,13 +202,10 @@ func (o AccountSASOptions) signPayload(params *url.Values) {
 		o.SignedProtocol.ToString() + "\n" +
 		o.SignedVersion.ToString() + "\n"
 
-	// URL Decode just in case...
-	unescapedStringToSign, _ := url.QueryUnescape(stringToSign)
-
 	// Compute HMAC-S256 signature
-	signature := hmacSHA256(
+	signature := crypto.HMACSHA256(
 		o.storageAccountKey,
-		[]byte(unescapedStringToSign),
+		[]byte(stringToSign),
 	)
 
 	params.Add("sig", signature)
