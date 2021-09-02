@@ -29,7 +29,7 @@ func NewAccountSAS(
 	signedExpiry string,
 	opts ...AccountSASOption,
 ) (
-	options *AccountSASOptions,
+	accountSAS *AccountSAS,
 	err error,
 ) {
 	storageKeyBytes, err := base64.StdEncoding.DecodeString(storageAccountKey)
@@ -55,34 +55,30 @@ func NewAccountSAS(
 		}
 	}
 
-	ss := services.Parse(signedServices)
-	srt := resourcetypes.Parse(signedResourceTypes)
-	sp := permissions.Parse(sv, signedPermissions)
-
-	options = &AccountSASOptions{
+	accountSAS = &AccountSAS{
 		storageAccountName:  storageAccountName,
 		storageAccountKey:   storageKeyBytes,
 		SignedVersion:       sv,
-		SignedServices:      ss,
-		SignedResourceTypes: srt,
-		SignedPermission:    sp,
+		SignedServices:      services.Parse(signedServices),
+		SignedResourceTypes: resourcetypes.Parse(signedResourceTypes),
+		SignedPermission:    permissions.Parse(sv, signedPermissions),
 		SignedExpiry:        se,
 	}
 
-	// Inject user options
+	// Inject optional fields
 	for _, opt := range opts {
-		if err := opt(options); err != nil {
+		if err := opt(accountSAS); err != nil {
 			return nil, err
 		}
 	}
 
-	return options, nil
+	return accountSAS, nil
 }
 
-type AccountSASOption func(options *AccountSASOptions) error
+type AccountSASOption func(options *AccountSAS) error
 
 func WithAPIVersion(apiVersion string) AccountSASOption {
-	return func(options *AccountSASOptions) error {
+	return func(options *AccountSAS) error {
 		options.ApiVersion = apiVersion
 
 		return nil
@@ -90,7 +86,7 @@ func WithAPIVersion(apiVersion string) AccountSASOption {
 }
 
 func WithSignedStart(startDateTime string) AccountSASOption {
-	return func(options *AccountSASOptions) error {
+	return func(options *AccountSAS) error {
 		st, err := aztime.ParseISO8601DateTime(startDateTime)
 		if err != nil {
 			switch err {
@@ -111,7 +107,7 @@ func WithSignedStart(startDateTime string) AccountSASOption {
 }
 
 func WithSignedIP(ip string) AccountSASOption {
-	return func(options *AccountSASOptions) error {
+	return func(options *AccountSAS) error {
 		sip, ok := signedip.Parse(ip)
 		if !ok {
 			return ErrInvalidIPv4Format
@@ -123,14 +119,14 @@ func WithSignedIP(ip string) AccountSASOption {
 }
 
 func WithSignedProtocols(signedProtocols string) AccountSASOption {
-	return func(options *AccountSASOptions) error {
+	return func(options *AccountSAS) error {
 		options.SignedProtocol = protocols.Parse(signedProtocols)
 
 		return nil
 	}
 }
 
-type AccountSASOptions struct {
+type AccountSAS struct {
 	storageAccountName  string
 	storageAccountKey   []byte
 	ApiVersion          string
@@ -144,7 +140,7 @@ type AccountSASOptions struct {
 	SignedProtocol      protocols.Protocols
 }
 
-func (o AccountSASOptions) GetToken() string {
+func (o AccountSAS) GetToken() string {
 	params := &url.Values{}
 	if o.ApiVersion != "" {
 		params.Add("api-version", o.ApiVersion)
@@ -176,7 +172,9 @@ func (o AccountSASOptions) GetToken() string {
 	return params.Encode()
 }
 
-func (o AccountSASOptions) signPayload(params *url.Values) {
+// signPayload generates the required HMAC-SHA256 signature and binds it into
+// the provided url params.
+func (o AccountSAS) signPayload(params *url.Values) {
 	// Refer: https://docs.microsoft.com/en-us/rest/api/storageservices/create-account-sas#constructing-the-signature-string
 	// To construct the signature string for an account SAS, first construct the
 	// string-to-sign from the fields comprising the request, then encode the
