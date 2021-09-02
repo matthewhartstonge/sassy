@@ -38,7 +38,7 @@ func NewAccountSAS(
 ) {
 	storageKeyBytes, err := base64.StdEncoding.DecodeString(storageAccountKey)
 	if err != nil {
-		return nil, ErrInvalidStorageAccountKey
+		return nil, ErrDecodingStorageAccountKey
 	}
 
 	sv, ok := versions.Parse(signedVersion)
