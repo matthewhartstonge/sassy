@@ -13,12 +13,8 @@ import (
 	"github.com/matthewhartstonge/sassy/sas/protocols"
 	"github.com/matthewhartstonge/sassy/sas/resourcetypes"
 	"github.com/matthewhartstonge/sassy/sas/services"
+	"github.com/matthewhartstonge/sassy/sas/signedip"
 	"github.com/matthewhartstonge/sassy/sas/versions"
-)
-
-const (
-	// TODO: package signed-ip
-	paramKeySignedIP = "sip"
 )
 
 // NewAccountSAS provides a way to generate an account based Shared Access
@@ -116,9 +112,12 @@ func WithSignedStart(startDateTime string) AccountSASOption {
 
 func WithSignedIP(ip string) AccountSASOption {
 	return func(options *AccountSASOptions) error {
-		// TODO: parse signed ip using signed ip package
-		options.SignedIP = ip
+		sip, ok := signedip.Parse(ip)
+		if !ok {
+			return ErrInvalidIPv4Format
+		}
 
+		options.SignedIP = sip
 		return nil
 	}
 }
@@ -141,7 +140,7 @@ type AccountSASOptions struct {
 	SignedPermission    permissions.SignedPermissions
 	SignedStart         time.Time
 	SignedExpiry        time.Time
-	SignedIP            string // TODO: use package signed-ip type
+	SignedIP            signedip.SignedIP
 	SignedProtocol      protocols.Protocols
 }
 
@@ -170,11 +169,7 @@ func (o AccountSASOptions) GetToken() string {
 		)
 	}
 
-	if o.SignedIP != "" {
-		// todo: inject parsed signed ip
-		params.Set(paramKeySignedIP, o.SignedIP)
-	}
-
+	o.SignedIP.SetParam(params)
 	o.SignedProtocol.SetParam(params)
 	o.signPayload(params)
 
@@ -198,7 +193,7 @@ func (o AccountSASOptions) signPayload(params *url.Values) {
 		o.SignedResourceTypes.ToString() + "\n" +
 		aztime.ToString(o.SignedStart) + "\n" +
 		aztime.ToString(o.SignedExpiry) + "\n" +
-		o.SignedIP + "\n" + // TODO: use packaged signed-ip toString()
+		o.SignedIP.ToString() + "\n" +
 		o.SignedProtocol.ToString() + "\n" +
 		o.SignedVersion.ToString() + "\n"
 
