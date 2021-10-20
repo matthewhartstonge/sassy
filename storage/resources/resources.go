@@ -22,19 +22,19 @@ import (
 	"strings"
 )
 
-type Resource string
+type SignedResource string
 
 const (
-	Container Resource = "c"
-	Directory Resource = "d"
-	Blob      Resource = "b"
+	Container SignedResource = "c"
+	Directory SignedResource = "d"
+	Blob      SignedResource = "b"
 )
 
 const paramKey = "sr"
 
-type Resources []Resource
+type SignedResources []SignedResource
 
-func (r Resources) ToString() string {
+func (r SignedResources) ToString() string {
 	sr := ""
 	for _, resource := range r {
 		sr += string(resource)
@@ -43,13 +43,13 @@ func (r Resources) ToString() string {
 	return sr
 }
 
-func (r Resources) SetParam(params *url.Values) {
+func (r SignedResources) SetParam(params *url.Values) {
 	if len(r) > 0 {
 		params.Add(paramKey, r.ToString())
 	}
 }
 
-func (r Resources) GetParam() (resources string) {
+func (r SignedResources) GetParam() (resources string) {
 	if len(r) > 0 {
 		values := &url.Values{}
 		r.SetParam(values)
@@ -60,7 +60,7 @@ func (r Resources) GetParam() (resources string) {
 	return
 }
 
-func (r Resources) GetURLDecodedParam() (resources string) {
+func (r SignedResources) GetURLDecodedParam() (resources string) {
 	if len(r) > 0 {
 		resources, _ = url.QueryUnescape(r.GetParam())
 	}
@@ -68,17 +68,17 @@ func (r Resources) GetURLDecodedParam() (resources string) {
 	return
 }
 
-func Parse(resources string) Resources {
-	vMap := map[Resource]struct{}{
+func Parse(resources string) SignedResources {
+	vMap := map[SignedResource]struct{}{
 		Container: {},
 		Directory: {},
 		Blob:      {},
 	}
 
-	var sr Resources
+	var sr SignedResources
 	splitResources := strings.Split(resources, "")
 	for _, service := range splitResources {
-		check := Resource(service)
+		check := SignedResource(service)
 		if _, ok := vMap[check]; ok {
 			sr = append(sr, check)
 		}
