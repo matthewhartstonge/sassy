@@ -22,35 +22,40 @@ import (
 	"strings"
 )
 
-type Service string
+type SignedService string
+
+// String implements Stringer.
+func (s SignedService) String() string {
+	return string(s)
+}
 
 const (
-	Blob  Service = "b"
-	Queue Service = "q"
-	Table Service = "t"
-	File  Service = "f"
+	Blob  SignedService = "b"
+	Queue SignedService = "q"
+	Table SignedService = "t"
+	File  SignedService = "f"
 )
 
 const paramKey = "ss"
 
-type Services []Service
+type SignedServices []SignedService
 
-func (s Services) ToString() string {
+func (s SignedServices) String() string {
 	ss := ""
 	for _, service := range s {
-		ss += string(service)
+		ss += service.String()
 	}
 
 	return ss
 }
 
-func (s *Services) SetParam(params *url.Values) {
+func (s *SignedServices) SetParam(params *url.Values) {
 	if s != nil && len(*s) > 0 {
-		params.Add(paramKey, s.ToString())
+		params.Add(paramKey, s.String())
 	}
 }
 
-func (s Services) GetParam() (services string) {
+func (s SignedServices) GetParam() (services string) {
 	if len(s) > 0 {
 		values := &url.Values{}
 		s.SetParam(values)
@@ -61,7 +66,7 @@ func (s Services) GetParam() (services string) {
 	return
 }
 
-func (s Services) GetURLDecodedParam() (services string) {
+func (s SignedServices) GetURLDecodedParam() (services string) {
 	if len(s) > 0 {
 		services, _ = url.QueryUnescape(s.GetParam())
 	}
@@ -69,18 +74,18 @@ func (s Services) GetURLDecodedParam() (services string) {
 	return
 }
 
-func Parse(services string) Services {
-	vMap := map[Service]struct{}{
+func Parse(services string) SignedServices {
+	vMap := map[SignedService]struct{}{
 		Blob:  {},
 		Queue: {},
 		Table: {},
 		File:  {},
 	}
 
-	var ss Services
-	splitServices := strings.Split(services, "")
+	var ss SignedServices
+	splitServices := strings.Split(strings.ToLower(strings.TrimSpace(services)), "")
 	for _, service := range splitServices {
-		check := Service(service)
+		check := SignedService(service)
 		if _, ok := vMap[check]; ok {
 			ss = append(ss, check)
 		}

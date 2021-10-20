@@ -22,37 +22,42 @@ import (
 	"strings"
 )
 
-type Resource string
+type SignedResource string
+
+// String implements Stringer
+func (s SignedResource) String() string {
+	return string(s)
+}
 
 const (
-	Container Resource = "c"
-	Directory Resource = "d"
-	Blob      Resource = "b"
+	Container SignedResource = "c"
+	Directory SignedResource = "d"
+	Blob      SignedResource = "b"
 )
 
 const paramKey = "sr"
 
-type Resources []Resource
+type SignedResources []SignedResource
 
-func (r Resources) ToString() string {
+func (s SignedResources) String() string {
 	sr := ""
-	for _, resource := range r {
-		sr += string(resource)
+	for _, resource := range s {
+		sr += resource.String()
 	}
 
 	return sr
 }
 
-func (r Resources) SetParam(params *url.Values) {
-	if len(r) > 0 {
-		params.Add(paramKey, r.ToString())
+func (s SignedResources) SetParam(params *url.Values) {
+	if len(s) > 0 {
+		params.Add(paramKey, s.String())
 	}
 }
 
-func (r Resources) GetParam() (resources string) {
-	if len(r) > 0 {
+func (s SignedResources) GetParam() (resources string) {
+	if len(s) > 0 {
 		values := &url.Values{}
-		r.SetParam(values)
+		s.SetParam(values)
 
 		resources = values.Encode()
 	}
@@ -60,25 +65,25 @@ func (r Resources) GetParam() (resources string) {
 	return
 }
 
-func (r Resources) GetURLDecodedParam() (resources string) {
-	if len(r) > 0 {
-		resources, _ = url.QueryUnescape(r.GetParam())
+func (s SignedResources) GetURLDecodedParam() (resources string) {
+	if len(s) > 0 {
+		resources, _ = url.QueryUnescape(s.GetParam())
 	}
 
 	return
 }
 
-func Parse(resources string) Resources {
-	vMap := map[Resource]struct{}{
+func Parse(resources string) SignedResources {
+	vMap := map[SignedResource]struct{}{
 		Container: {},
 		Directory: {},
 		Blob:      {},
 	}
 
-	var sr Resources
-	splitResources := strings.Split(resources, "")
+	var sr SignedResources
+	splitResources := strings.Split(strings.ToLower(strings.TrimSpace(resources)), "")
 	for _, service := range splitResources {
-		check := Resource(service)
+		check := SignedResource(service)
 		if _, ok := vMap[check]; ok {
 			sr = append(sr, check)
 		}

@@ -26,6 +26,7 @@ package versions
 import (
 	// Standard Library Imports
 	"net/url"
+	"strings"
 )
 
 // SignedVersion specifies the signed storage service version to use to
@@ -33,13 +34,13 @@ import (
 type SignedVersion string
 
 const (
-	Latest = V2020_10_02
+	Latest = V20201002
 
-	V2020_10_02 SignedVersion = "2020-10-02"
-	V2020_08_04 SignedVersion = "2020-08-04"
-	V2020_02_10 SignedVersion = "2020-02-10"
-	V2019_12_12 SignedVersion = "2019-12-12"
-	V2015_04_05 SignedVersion = "2015-04-05"
+	V20201002 SignedVersion = "2020-10-02"
+	V20200804 SignedVersion = "2020-08-04"
+	V20200210 SignedVersion = "2020-02-10"
+	V20191212 SignedVersion = "2019-12-12"
+	V20150405 SignedVersion = "2015-04-05"
 
 	// VAll is just a placeholder to delineate where a given function/property
 	// is available in all API versions.
@@ -48,20 +49,20 @@ const (
 
 const paramKey = "sv"
 
-func (v SignedVersion) ToString() string {
-	return string(v)
+func (s SignedVersion) String() string {
+	return string(s)
 }
 
-func (v SignedVersion) SetParam(params *url.Values) {
-	if v != "" {
-		params.Add(paramKey, v.ToString())
+func (s SignedVersion) SetParam(params *url.Values) {
+	if s != "" {
+		params.Add(paramKey, s.String())
 	}
 }
 
-func (v SignedVersion) GetParam() (signedVersion string) {
-	if v != "" {
+func (s SignedVersion) GetParam() (signedVersion string) {
+	if s != "" {
 		values := &url.Values{}
-		v.SetParam(values)
+		s.SetParam(values)
 
 		signedVersion = values.Encode()
 	}
@@ -69,9 +70,9 @@ func (v SignedVersion) GetParam() (signedVersion string) {
 	return
 }
 
-func (v SignedVersion) GetURLDecodedParam() (signedVersion string) {
-	if v != "" {
-		signedVersion, _ = url.QueryUnescape(v.GetParam())
+func (s SignedVersion) GetURLDecodedParam() (signedVersion string) {
+	if s != "" {
+		signedVersion, _ = url.QueryUnescape(s.GetParam())
 	}
 
 	return
@@ -80,14 +81,14 @@ func (v SignedVersion) GetURLDecodedParam() (signedVersion string) {
 // Parse returns an API Version from a given string. Defaults to latest.
 func Parse(version string) (v SignedVersion, ok bool) {
 	vMap := map[SignedVersion]struct{}{
-		V2020_10_02: {},
-		V2020_08_04: {},
-		V2020_02_10: {},
-		V2019_12_12: {},
-		VAll:        {},
+		V20201002: {},
+		V20200804: {},
+		V20200210: {},
+		V20191212: {},
+		VAll:      {},
 	}
 
-	check := SignedVersion(version)
+	check := SignedVersion(strings.TrimSpace(version))
 	if _, ok = vMap[check]; ok {
 		return check, ok
 	}

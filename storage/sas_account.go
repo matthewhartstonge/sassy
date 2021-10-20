@@ -25,11 +25,11 @@ import (
 	// Internal Imports
 	"github.com/matthewhartstonge/sassy/storage/aztime"
 	"github.com/matthewhartstonge/sassy/storage/crypto"
+	"github.com/matthewhartstonge/sassy/storage/ips"
 	"github.com/matthewhartstonge/sassy/storage/permissions"
 	"github.com/matthewhartstonge/sassy/storage/protocols"
 	"github.com/matthewhartstonge/sassy/storage/resourcetypes"
 	"github.com/matthewhartstonge/sassy/storage/services"
-	"github.com/matthewhartstonge/sassy/storage/signedip"
 	"github.com/matthewhartstonge/sassy/storage/versions"
 )
 
@@ -95,7 +95,7 @@ type AccountSASOption func(options *AccountSAS) error
 
 func WithAPIVersion(apiVersion string) AccountSASOption {
 	return func(options *AccountSAS) error {
-		options.ApiVersion = apiVersion
+		options.APIVersion = apiVersion
 
 		return nil
 	}
@@ -124,7 +124,7 @@ func WithSignedStart(startDateTime string) AccountSASOption {
 
 func WithSignedIP(ip string) AccountSASOption {
 	return func(options *AccountSAS) error {
-		sip, ok := signedip.Parse(ip)
+		sip, ok := ips.Parse(ip)
 		if !ok {
 			return ErrInvalidIPv4Format
 		}
@@ -145,23 +145,23 @@ func WithSignedProtocols(signedProtocols string) AccountSASOption {
 type AccountSAS struct {
 	storageAccountName  string
 	storageAccountKey   []byte
-	ApiVersion          string
+	APIVersion          string
 	SignedVersion       versions.SignedVersion
-	SignedServices      services.Services
-	SignedResourceTypes resourcetypes.ResourceTypes
+	SignedServices      services.SignedServices
+	SignedResourceTypes resourcetypes.SignedResourceTypes
 	SignedPermission    permissions.SignedPermissions
 	SignedStart         time.Time
 	SignedExpiry        time.Time
-	SignedIP            signedip.SignedIP
-	SignedProtocol      protocols.Protocols
+	SignedIP            ips.SignedIP
+	SignedProtocol      protocols.SignedProtocols
 }
 
 // Token generates and signs an account based storage SAS token based on the
 // stored configuration.
 func (o AccountSAS) Token() string {
 	params := &url.Values{}
-	if o.ApiVersion != "" {
-		params.Add("api-version", o.ApiVersion)
+	if o.APIVersion != "" {
+		params.Add("api-version", o.APIVersion)
 	}
 
 	o.SignedVersion.SetParam(params)
@@ -202,16 +202,16 @@ func (o AccountSAS) signPayload(params *url.Values) {
 	// Note:
 	// - Fields included in the string-to-sign must be UTF-8, URL-decoded.
 	//   - Go by default uses utf-8 encoded strings.
-	//   - The `ToString()` methods ensure no URL encoding is taking place.
+	//   - The `String()` methods ensure no URL encoding is taking place.
 	stringToSign := o.storageAccountName + "\n" +
-		o.SignedPermission.ToString() + "\n" +
-		o.SignedServices.ToString() + "\n" +
-		o.SignedResourceTypes.ToString() + "\n" +
+		o.SignedPermission.String() + "\n" +
+		o.SignedServices.String() + "\n" +
+		o.SignedResourceTypes.String() + "\n" +
 		aztime.ToString(o.SignedStart) + "\n" +
 		aztime.ToString(o.SignedExpiry) + "\n" +
-		o.SignedIP.ToString() + "\n" +
-		o.SignedProtocol.ToString() + "\n" +
-		o.SignedVersion.ToString() + "\n"
+		o.SignedIP.String() + "\n" +
+		o.SignedProtocol.String() + "\n" +
+		o.SignedVersion.String() + "\n"
 
 	// Compute HMAC-S256 signature
 	signature := crypto.HMACSHA256(

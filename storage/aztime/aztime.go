@@ -20,6 +20,7 @@ import (
 	// Standard Library Imports
 	"errors"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -35,6 +36,7 @@ var (
 // ParseISO8601DateTime provides a much more CLI user-friendly time parser which
 // attempts to parse from least-to-greatest precision, failing if it .
 func ParseISO8601DateTime(dateTime string) (t time.Time, err error) {
+	dateTime = strings.TrimSpace(dateTime)
 	if dateTime == "" {
 		return time.Time{}, ErrDateTimeEmpty
 	}
