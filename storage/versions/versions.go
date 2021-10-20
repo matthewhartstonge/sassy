@@ -48,20 +48,20 @@ const (
 
 const paramKey = "sv"
 
-func (v SignedVersion) ToString() string {
-	return string(v)
+func (s SignedVersion) String() string {
+	return string(s)
 }
 
-func (v SignedVersion) SetParam(params *url.Values) {
-	if v != "" {
-		params.Add(paramKey, v.ToString())
+func (s SignedVersion) SetParam(params *url.Values) {
+	if s != "" {
+		params.Add(paramKey, s.String())
 	}
 }
 
-func (v SignedVersion) GetParam() (signedVersion string) {
-	if v != "" {
+func (s SignedVersion) GetParam() (signedVersion string) {
+	if s != "" {
 		values := &url.Values{}
-		v.SetParam(values)
+		s.SetParam(values)
 
 		signedVersion = values.Encode()
 	}
@@ -69,9 +69,9 @@ func (v SignedVersion) GetParam() (signedVersion string) {
 	return
 }
 
-func (v SignedVersion) GetURLDecodedParam() (signedVersion string) {
-	if v != "" {
-		signedVersion, _ = url.QueryUnescape(v.GetParam())
+func (s SignedVersion) GetURLDecodedParam() (signedVersion string) {
+	if s != "" {
+		signedVersion, _ = url.QueryUnescape(s.GetParam())
 	}
 
 	return

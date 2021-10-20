@@ -24,6 +24,11 @@ import (
 
 type SignedService string
 
+// String implements Stringer.
+func (s SignedService) String() string {
+	return string(s)
+}
+
 const (
 	Blob  SignedService = "b"
 	Queue SignedService = "q"
@@ -35,10 +40,10 @@ const paramKey = "ss"
 
 type SignedServices []SignedService
 
-func (s SignedServices) ToString() string {
+func (s SignedServices) String() string {
 	ss := ""
 	for _, service := range s {
-		ss += string(service)
+		ss += service.String()
 	}
 
 	return ss
@@ -46,7 +51,7 @@ func (s SignedServices) ToString() string {
 
 func (s *SignedServices) SetParam(params *url.Values) {
 	if s != nil && len(*s) > 0 {
-		params.Add(paramKey, s.ToString())
+		params.Add(paramKey, s.String())
 	}
 }
 

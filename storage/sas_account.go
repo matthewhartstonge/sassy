@@ -202,16 +202,16 @@ func (o AccountSAS) signPayload(params *url.Values) {
 	// Note:
 	// - Fields included in the string-to-sign must be UTF-8, URL-decoded.
 	//   - Go by default uses utf-8 encoded strings.
-	//   - The `ToString()` methods ensure no URL encoding is taking place.
+	//   - The `String()` methods ensure no URL encoding is taking place.
 	stringToSign := o.storageAccountName + "\n" +
-		o.SignedPermission.ToString() + "\n" +
-		o.SignedServices.ToString() + "\n" +
-		o.SignedResourceTypes.ToString() + "\n" +
+		o.SignedPermission.String() + "\n" +
+		o.SignedServices.String() + "\n" +
+		o.SignedResourceTypes.String() + "\n" +
 		aztime.ToString(o.SignedStart) + "\n" +
 		aztime.ToString(o.SignedExpiry) + "\n" +
-		o.SignedIP.ToString() + "\n" +
-		o.SignedProtocol.ToString() + "\n" +
-		o.SignedVersion.ToString() + "\n"
+		o.SignedIP.String() + "\n" +
+		o.SignedProtocol.String() + "\n" +
+		o.SignedVersion.String() + "\n"
 
 	// Compute HMAC-S256 signature
 	signature := crypto.HMACSHA256(

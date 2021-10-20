@@ -26,7 +26,7 @@ func main() {
 		// signedVersion specifies what API version to use in order to generate
 		// the storage SAS token - must be set to version 2015-04-05 or later.
 		// Current valid versions can be found in `storage/versions/versions.go`
-		versions.Latest.ToString(),
+		versions.Latest.String(),
 		// signedServices supports:
 		// Blob  = "b"
 		// Queue = "q"

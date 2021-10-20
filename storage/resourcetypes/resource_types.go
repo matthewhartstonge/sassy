@@ -24,6 +24,11 @@ import (
 
 type SignedResourceType string
 
+// String implements Stringer.
+func (s SignedResourceType) String() string {
+	return string(s)
+}
+
 const (
 	Service   SignedResourceType = "s"
 	Container SignedResourceType = "c"
@@ -34,25 +39,25 @@ const paramKey = "srt"
 
 type SignedResourceTypes []SignedResourceType
 
-func (r SignedResourceTypes) ToString() string {
+func (s SignedResourceTypes) String() string {
 	sr := ""
-	for _, resource := range r {
-		sr += string(resource)
+	for _, resource := range s {
+		sr += resource.String()
 	}
 
 	return sr
 }
 
-func (r SignedResourceTypes) SetParam(params *url.Values) {
-	if len(r) > 0 {
-		params.Add(paramKey, r.ToString())
+func (s SignedResourceTypes) SetParam(params *url.Values) {
+	if len(s) > 0 {
+		params.Add(paramKey, s.String())
 	}
 }
 
-func (r SignedResourceTypes) GetParam() (resourceTypes string) {
-	if len(r) > 0 {
+func (s SignedResourceTypes) GetParam() (resourceTypes string) {
+	if len(s) > 0 {
 		values := &url.Values{}
-		r.SetParam(values)
+		s.SetParam(values)
 
 		resourceTypes = values.Encode()
 	}
@@ -60,9 +65,9 @@ func (r SignedResourceTypes) GetParam() (resourceTypes string) {
 	return
 }
 
-func (r SignedResourceTypes) GetURLDecodedParam() (resourceTypes string) {
-	if len(r) > 0 {
-		resourceTypes, _ = url.QueryUnescape(r.GetParam())
+func (s SignedResourceTypes) GetURLDecodedParam() (resourceTypes string) {
+	if len(s) > 0 {
+		resourceTypes, _ = url.QueryUnescape(s.GetParam())
 	}
 
 	return

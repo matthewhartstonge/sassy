@@ -32,6 +32,11 @@ const (
 
 type SignedPermission string
 
+// String implements Stringer.
+func (s SignedPermission) String() string {
+	return string(s)
+}
+
 const (
 	Read            SignedPermission = "r"
 	Add             SignedPermission = "a"
@@ -61,13 +66,13 @@ type SignedPermissions struct {
 	permissions [numPermissions]SignedPermission
 }
 
-func (p SignedPermissions) ToString() string {
+func (s SignedPermissions) String() string {
 	var out []string
 	spMap := signedPermissionMap()
-	for _, value := range p.permissions {
-		if spec, ok := spMap[value]; ok {
-			if spec.APIVersion == versions.VAll || spec.APIVersion <= p.SignedVersion {
-				out = append(out, string(value))
+	for _, permission := range s.permissions {
+		if spec, ok := spMap[permission]; ok {
+			if spec.APIVersion == versions.VAll || spec.APIVersion <= s.SignedVersion {
+				out = append(out, permission.String())
 			}
 		}
 	}
@@ -75,16 +80,16 @@ func (p SignedPermissions) ToString() string {
 	return strings.Join(out, "")
 }
 
-func (p SignedPermissions) SetParam(params *url.Values) {
-	if p.hasValues {
-		params.Add(paramKey, p.ToString())
+func (s SignedPermissions) SetParam(params *url.Values) {
+	if s.hasValues {
+		params.Add(paramKey, s.String())
 	}
 }
 
-func (p SignedPermissions) GetParam() (signedPermissions string) {
-	if p.hasValues {
+func (s SignedPermissions) GetParam() (signedPermissions string) {
+	if s.hasValues {
 		values := &url.Values{}
-		p.SetParam(values)
+		s.SetParam(values)
 
 		signedPermissions = values.Encode()
 	}
@@ -92,9 +97,9 @@ func (p SignedPermissions) GetParam() (signedPermissions string) {
 	return
 }
 
-func (p SignedPermissions) GetURLDecodedParam() (signedPermissions string) {
-	if p.hasValues {
-		signedPermissions, _ = url.QueryUnescape(p.GetParam())
+func (s SignedPermissions) GetURLDecodedParam() (signedPermissions string) {
+	if s.hasValues {
+		signedPermissions, _ = url.QueryUnescape(s.GetParam())
 	}
 
 	return

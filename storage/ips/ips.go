@@ -32,20 +32,21 @@ const (
 
 type SignedIP string
 
-func (p SignedIP) ToString() string {
-	return string(p)
+// String implements Stringer.
+func (s SignedIP) String() string {
+	return string(s)
 }
 
-func (p SignedIP) SetParam(params *url.Values) {
-	if p != "" {
-		params.Add(paramKey, p.ToString())
+func (s SignedIP) SetParam(params *url.Values) {
+	if s != "" {
+		params.Add(paramKey, s.String())
 	}
 }
 
-func (p SignedIP) GetParam() (signedIPs string) {
-	if p != "" {
+func (s SignedIP) GetParam() (signedIPs string) {
+	if s != "" {
 		values := &url.Values{}
-		p.SetParam(values)
+		s.SetParam(values)
 
 		signedIPs = values.Encode()
 	}

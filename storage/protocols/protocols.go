@@ -24,6 +24,11 @@ import (
 
 type SignedProtocol string
 
+// String implements Stringer.
+func (s SignedProtocol) String() string {
+	return string(s)
+}
+
 const (
 	HTTP  SignedProtocol = "http"
 	HTTPS SignedProtocol = "https"
@@ -48,27 +53,27 @@ func defaultProtocols() SignedProtocols {
 	}
 }
 
-func (r SignedProtocols) ToString() string {
+func (s SignedProtocols) String() string {
 	var out []string
-	for _, protocol := range r.protocols {
+	for _, protocol := range s.protocols {
 		if protocol != "" {
-			out = append(out, string(protocol))
+			out = append(out, protocol.String())
 		}
 	}
 
 	return strings.Join(out, ",")
 }
 
-func (r SignedProtocols) SetParam(params *url.Values) {
-	if r.hasValues {
-		params.Add(paramKey, r.ToString())
+func (s SignedProtocols) SetParam(params *url.Values) {
+	if s.hasValues {
+		params.Add(paramKey, s.String())
 	}
 }
 
-func (r SignedProtocols) GetParam() (protocols string) {
-	if r.hasValues {
+func (s SignedProtocols) GetParam() (protocols string) {
+	if s.hasValues {
 		values := &url.Values{}
-		r.SetParam(values)
+		s.SetParam(values)
 
 		protocols = values.Encode()
 	}
@@ -76,9 +81,9 @@ func (r SignedProtocols) GetParam() (protocols string) {
 	return
 }
 
-func (r SignedProtocols) GetURLDecodedParam() (protocols string) {
-	if r.hasValues {
-		protocols, _ = url.QueryUnescape(r.GetParam())
+func (s SignedProtocols) GetURLDecodedParam() (protocols string) {
+	if s.hasValues {
+		protocols, _ = url.QueryUnescape(s.GetParam())
 	}
 
 	return
@@ -93,8 +98,8 @@ func Parse(protocols string) (spr SignedProtocols) {
 		protocols: [numProtocols]SignedProtocol{},
 	}
 
-	splitProtocols := strings.Split(protocols, ",")
-	if len(splitProtocols) == 1 && string(HTTP) == strings.ToLower(splitProtocols[0]) {
+	splitProtocols := strings.Split(strings.ToLower(protocols), ",")
+	if len(splitProtocols) == 1 && HTTP.String() == splitProtocols[0] {
 		// Note that HTTP only is not a permitted value.
 		return defaultProtocols()
 	}
