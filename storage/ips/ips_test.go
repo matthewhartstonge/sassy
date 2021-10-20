@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package signedip
+package ips
 
 import (
 	"testing"
