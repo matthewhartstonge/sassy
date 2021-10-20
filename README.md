@@ -73,4 +73,3 @@ func main() {
 * Storage: Service SAS generation 
 * Storage: User Delegation SAS generation
 * CLI tool
-* Event SAS Tokens?
