@@ -22,11 +22,11 @@ import (
 	"strings"
 )
 
-type Protocol string
+type SignedProtocol string
 
 const (
-	HTTP  Protocol = "http"
-	HTTPS Protocol = "https"
+	HTTP  SignedProtocol = "http"
+	HTTPS SignedProtocol = "https"
 )
 
 const (
@@ -34,21 +34,21 @@ const (
 	paramKey     = "spr"
 )
 
-type Protocols struct {
+type SignedProtocols struct {
 	// hasValues tracks whether protocols have been added.
 	hasValues bool
 	// protocols must be in the order https,http
-	protocols [numProtocols]Protocol
+	protocols [numProtocols]SignedProtocol
 }
 
-func defaultProtocols() Protocols {
-	return Protocols{
+func defaultProtocols() SignedProtocols {
+	return SignedProtocols{
 		hasValues: true,
-		protocols: [numProtocols]Protocol{HTTPS, HTTP},
+		protocols: [numProtocols]SignedProtocol{HTTPS, HTTP},
 	}
 }
 
-func (r Protocols) ToString() string {
+func (r SignedProtocols) ToString() string {
 	var out []string
 	for _, protocol := range r.protocols {
 		if protocol != "" {
@@ -59,13 +59,13 @@ func (r Protocols) ToString() string {
 	return strings.Join(out, ",")
 }
 
-func (r Protocols) SetParam(params *url.Values) {
+func (r SignedProtocols) SetParam(params *url.Values) {
 	if r.hasValues {
 		params.Add(paramKey, r.ToString())
 	}
 }
 
-func (r Protocols) GetParam() (protocols string) {
+func (r SignedProtocols) GetParam() (protocols string) {
 	if r.hasValues {
 		values := &url.Values{}
 		r.SetParam(values)
@@ -76,7 +76,7 @@ func (r Protocols) GetParam() (protocols string) {
 	return
 }
 
-func (r Protocols) GetURLDecodedParam() (protocols string) {
+func (r SignedProtocols) GetURLDecodedParam() (protocols string) {
 	if r.hasValues {
 		protocols, _ = url.QueryUnescape(r.GetParam())
 	}
@@ -87,10 +87,10 @@ func (r Protocols) GetURLDecodedParam() (protocols string) {
 // Parse returns a valid set of protocols. Possible values are both HTTPS and
 // HTTP (https,http) or HTTPS only (https).
 // The default value is https,http.
-func Parse(protocols string) (spr Protocols) {
-	spr = Protocols{
+func Parse(protocols string) (spr SignedProtocols) {
+	spr = SignedProtocols{
 		hasValues: false,
-		protocols: [numProtocols]Protocol{},
+		protocols: [numProtocols]SignedProtocol{},
 	}
 
 	splitProtocols := strings.Split(protocols, ",")
@@ -101,7 +101,7 @@ func Parse(protocols string) (spr Protocols) {
 
 	sprMap := protocolMap()
 	for _, protocol := range splitProtocols {
-		check := Protocol(strings.ToLower(protocol))
+		check := SignedProtocol(strings.ToLower(protocol))
 		if protocolIndex, ok := sprMap[check]; ok {
 			spr.protocols[protocolIndex] = check
 			if !spr.hasValues {
@@ -113,8 +113,8 @@ func Parse(protocols string) (spr Protocols) {
 	return spr
 }
 
-func protocolMap() map[Protocol]int {
-	return map[Protocol]int{
+func protocolMap() map[SignedProtocol]int {
+	return map[SignedProtocol]int{
 		HTTPS: 0,
 		HTTP:  1,
 	}
