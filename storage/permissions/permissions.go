@@ -149,13 +149,13 @@ func signedPermissionMap() map[string]signedPermissionSpec {
 			OpName:        "Delete version",
 			OpDescription: "Delete a blob version.",
 			Index:         5,
-			APIVersion:    versions.V2019_12_12,
+			APIVersion:    versions.V20191212,
 		},
 		"y": {
 			OpName:        "Permanent delete",
 			OpDescription: "Permanently delete a blob snapshot or version.",
 			Index:         6,
-			APIVersion:    versions.V2020_02_10,
+			APIVersion:    versions.V20200210,
 		},
 		"l": {
 			OpName:        "List",
@@ -167,31 +167,31 @@ func signedPermissionMap() map[string]signedPermissionSpec {
 			OpName:        "Tags",
 			OpDescription: "Read or write the tags on a blob.",
 			Index:         8,
-			APIVersion:    versions.V2019_12_12,
+			APIVersion:    versions.V20191212,
 		},
 		"m": {
 			OpName:        "Move",
 			OpDescription: "Move a blob or a directory and its contents to a new location. This operation can optionally be restricted to the owner of the child blob, directory, or parent directory if the `saoid` parameter is included on the SAS token and the sticky bit is set on the parent directory.",
 			Index:         9,
-			APIVersion:    versions.V2020_02_10,
+			APIVersion:    versions.V20200210,
 		},
 		"e": {
 			OpName:        "Execute",
 			OpDescription: "Get the system properties and, if the hierarchical namespace is enabled for the storage account, get the POSIX ACL of a blob. If the hierarchical namespace is enabled and the caller is the owner of a blob, this permission grants the ability to set the owning group, POSIX permissions, and POSIX ACL of the blob. Does not permit the caller to read user-defined metadata.",
 			Index:         10,
-			APIVersion:    versions.V2020_02_10,
+			APIVersion:    versions.V20200210,
 		},
 		"o": {
 			OpName:        "Ownership",
 			OpDescription: "When the hierarchical namespace is enabled, this permission enables the caller to set the owner or the owning group, or to act as the owner when renaming or deleting a directory or blob within a directory that has the sticky bit set.",
 			Index:         11,
-			APIVersion:    versions.V2020_02_10,
+			APIVersion:    versions.V20200210,
 		},
 		"p": {
 			OpName:        "Permissions",
 			OpDescription: "When the hierarchical namespace is enabled, this permission allows the caller to set permissions and POSIX ACLs on directories and blobs.",
 			Index:         12,
-			APIVersion:    versions.V2020_02_10,
+			APIVersion:    versions.V20200210,
 		},
 	}
 }
