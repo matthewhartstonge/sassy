@@ -98,7 +98,7 @@ func Parse(protocols string) (spr SignedProtocols) {
 		protocols: [numProtocols]SignedProtocol{},
 	}
 
-	splitProtocols := strings.Split(strings.ToLower(protocols), ",")
+	splitProtocols := strings.Split(strings.ToLower(strings.TrimSpace(protocols)), ",")
 	if len(splitProtocols) == 1 && HTTP.String() == splitProtocols[0] {
 		// Note that HTTP only is not a permitted value.
 		return defaultProtocols()
@@ -106,7 +106,7 @@ func Parse(protocols string) (spr SignedProtocols) {
 
 	sprMap := protocolMap()
 	for _, protocol := range splitProtocols {
-		check := SignedProtocol(strings.ToLower(protocol))
+		check := SignedProtocol(protocol)
 		if protocolIndex, ok := sprMap[check]; ok {
 			spr.protocols[protocolIndex] = check
 			if !spr.hasValues {

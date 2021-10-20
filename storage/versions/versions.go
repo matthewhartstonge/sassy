@@ -26,6 +26,7 @@ package versions
 import (
 	// Standard Library Imports
 	"net/url"
+	"strings"
 )
 
 // SignedVersion specifies the signed storage service version to use to
@@ -87,7 +88,7 @@ func Parse(version string) (v SignedVersion, ok bool) {
 		VAll:      {},
 	}
 
-	check := SignedVersion(version)
+	check := SignedVersion(strings.TrimSpace(version))
 	if _, ok = vMap[check]; ok {
 		return check, ok
 	}

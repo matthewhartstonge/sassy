@@ -114,7 +114,7 @@ func Parse(version versions.SignedVersion, permissions string) (sp SignedPermiss
 	}
 
 	spMap := signedPermissionMap()
-	splitPermissions := strings.Split(strings.ToLower(permissions), "")
+	splitPermissions := strings.Split(strings.ToLower(strings.TrimSpace(permissions)), "")
 	for _, permission := range splitPermissions {
 		signedPermission := SignedPermission(permission)
 		if spec, ok := spMap[signedPermission]; ok {

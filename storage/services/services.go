@@ -83,7 +83,7 @@ func Parse(services string) SignedServices {
 	}
 
 	var ss SignedServices
-	splitServices := strings.Split(services, "")
+	splitServices := strings.Split(strings.ToLower(strings.TrimSpace(services)), "")
 	for _, service := range splitServices {
 		check := SignedService(service)
 		if _, ok := vMap[check]; ok {

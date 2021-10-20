@@ -75,7 +75,7 @@ func (s SignedResourceTypes) GetURLDecodedParam() (resourceTypes string) {
 
 func Parse(resourceTypes string) (srt SignedResourceTypes) {
 	srtMap := resourceTypeMap()
-	splitResourceTypes := strings.Split(resourceTypes, "")
+	splitResourceTypes := strings.Split(strings.ToLower(strings.TrimSpace(resourceTypes)), "")
 	for _, resourceType := range splitResourceTypes {
 		check := SignedResourceType(resourceType)
 		if _, ok := srtMap[check]; ok {

@@ -81,7 +81,7 @@ func Parse(resources string) SignedResources {
 	}
 
 	var sr SignedResources
-	splitResources := strings.Split(resources, "")
+	splitResources := strings.Split(strings.ToLower(strings.TrimSpace(resources)), "")
 	for _, service := range splitResources {
 		check := SignedResource(service)
 		if _, ok := vMap[check]; ok {
