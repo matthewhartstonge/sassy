@@ -95,7 +95,7 @@ type AccountSASOption func(options *AccountSAS) error
 
 func WithAPIVersion(apiVersion string) AccountSASOption {
 	return func(options *AccountSAS) error {
-		options.ApiVersion = apiVersion
+		options.APIVersion = apiVersion
 
 		return nil
 	}
@@ -145,7 +145,7 @@ func WithSignedProtocols(signedProtocols string) AccountSASOption {
 type AccountSAS struct {
 	storageAccountName  string
 	storageAccountKey   []byte
-	ApiVersion          string
+	APIVersion          string
 	SignedVersion       versions.SignedVersion
 	SignedServices      services.SignedServices
 	SignedResourceTypes resourcetypes.SignedResourceTypes
@@ -160,8 +160,8 @@ type AccountSAS struct {
 // stored configuration.
 func (o AccountSAS) Token() string {
 	params := &url.Values{}
-	if o.ApiVersion != "" {
-		params.Add("api-version", o.ApiVersion)
+	if o.APIVersion != "" {
+		params.Add("api-version", o.APIVersion)
 	}
 
 	o.SignedVersion.SetParam(params)
