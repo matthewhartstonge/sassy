@@ -25,11 +25,11 @@ import (
 	// Internal Imports
 	"github.com/matthewhartstonge/sassy/storage/aztime"
 	"github.com/matthewhartstonge/sassy/storage/crypto"
+	"github.com/matthewhartstonge/sassy/storage/ips"
 	"github.com/matthewhartstonge/sassy/storage/permissions"
 	"github.com/matthewhartstonge/sassy/storage/protocols"
 	"github.com/matthewhartstonge/sassy/storage/resourcetypes"
 	"github.com/matthewhartstonge/sassy/storage/services"
-	"github.com/matthewhartstonge/sassy/storage/signedip"
 	"github.com/matthewhartstonge/sassy/storage/versions"
 )
 
@@ -124,7 +124,7 @@ func WithSignedStart(startDateTime string) AccountSASOption {
 
 func WithSignedIP(ip string) AccountSASOption {
 	return func(options *AccountSAS) error {
-		sip, ok := signedip.Parse(ip)
+		sip, ok := ips.Parse(ip)
 		if !ok {
 			return ErrInvalidIPv4Format
 		}
@@ -147,13 +147,13 @@ type AccountSAS struct {
 	storageAccountKey   []byte
 	ApiVersion          string
 	SignedVersion       versions.SignedVersion
-	SignedServices      services.Services
-	SignedResourceTypes resourcetypes.ResourceTypes
+	SignedServices      services.SignedServices
+	SignedResourceTypes resourcetypes.SignedResourceTypes
 	SignedPermission    permissions.SignedPermissions
 	SignedStart         time.Time
 	SignedExpiry        time.Time
-	SignedIP            signedip.SignedIP
-	SignedProtocol      protocols.Protocols
+	SignedIP            ips.SignedIP
+	SignedProtocol      protocols.SignedProtocols
 }
 
 // Token generates and signs an account based storage SAS token based on the
