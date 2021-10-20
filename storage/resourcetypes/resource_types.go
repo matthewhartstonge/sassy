@@ -22,19 +22,19 @@ import (
 	"strings"
 )
 
-type ResourceType string
+type SignedResourceType string
 
 const (
-	Service   ResourceType = "s"
-	Container ResourceType = "c"
-	Object    ResourceType = "o"
+	Service   SignedResourceType = "s"
+	Container SignedResourceType = "c"
+	Object    SignedResourceType = "o"
 )
 
 const paramKey = "srt"
 
-type ResourceTypes []ResourceType
+type SignedResourceTypes []SignedResourceType
 
-func (r ResourceTypes) ToString() string {
+func (r SignedResourceTypes) ToString() string {
 	sr := ""
 	for _, resource := range r {
 		sr += string(resource)
@@ -43,13 +43,13 @@ func (r ResourceTypes) ToString() string {
 	return sr
 }
 
-func (r ResourceTypes) SetParam(params *url.Values) {
+func (r SignedResourceTypes) SetParam(params *url.Values) {
 	if len(r) > 0 {
 		params.Add(paramKey, r.ToString())
 	}
 }
 
-func (r ResourceTypes) GetParam() (resourceTypes string) {
+func (r SignedResourceTypes) GetParam() (resourceTypes string) {
 	if len(r) > 0 {
 		values := &url.Values{}
 		r.SetParam(values)
@@ -60,7 +60,7 @@ func (r ResourceTypes) GetParam() (resourceTypes string) {
 	return
 }
 
-func (r ResourceTypes) GetURLDecodedParam() (resourceTypes string) {
+func (r SignedResourceTypes) GetURLDecodedParam() (resourceTypes string) {
 	if len(r) > 0 {
 		resourceTypes, _ = url.QueryUnescape(r.GetParam())
 	}
@@ -68,11 +68,11 @@ func (r ResourceTypes) GetURLDecodedParam() (resourceTypes string) {
 	return
 }
 
-func Parse(resourceTypes string) (srt ResourceTypes) {
+func Parse(resourceTypes string) (srt SignedResourceTypes) {
 	srtMap := resourceTypeMap()
 	splitResourceTypes := strings.Split(resourceTypes, "")
 	for _, resourceType := range splitResourceTypes {
-		check := ResourceType(resourceType)
+		check := SignedResourceType(resourceType)
 		if _, ok := srtMap[check]; ok {
 			srt = append(srt, check)
 		}
@@ -81,8 +81,8 @@ func Parse(resourceTypes string) (srt ResourceTypes) {
 	return srt
 }
 
-func resourceTypeMap() map[ResourceType]struct{} {
-	return map[ResourceType]struct{}{
+func resourceTypeMap() map[SignedResourceType]struct{} {
+	return map[SignedResourceType]struct{}{
 		Service:   {},
 		Container: {},
 		Object:    {},
